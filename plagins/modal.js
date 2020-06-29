@@ -57,9 +57,9 @@ options = {
 +	modal window should close
 +	setContent(html: string): void | PUBLIC
 	-------------
-	onClose(): void
-	onOpen(): void
-	beforeClose(): boolean | true - can close | false - can't close
++	onClose(): void
++	onOpen(): void
++	beforeClose(): boolean | true - can close | false - can't close
 	-------------
 	animate.css
 }
@@ -77,14 +77,23 @@ $.modal = function(options) {
 				return console.log('Modal is destroyed')
 			}
 			!closing && $modal.classList.add('open')
+			if (typeof options.onOpen === 'function')
+					options.onOpen()
 		},
 		close() {
+			if (typeof options.beforeClose === 'function') {
+				const closeConfirm = options.beforeClose()
+				if (!closeConfirm) return
+			}
+
 			closing = true
 			$modal.classList.remove('open')
 			$modal.classList.add('hide')
 			setTimeout(() => {
 				$modal.classList.remove('hide')
 				closing = false
+				if (typeof options.onClose === 'function')
+					options.onClose()
 			}, ANIMATION_SPEED)
 		},
 	}
